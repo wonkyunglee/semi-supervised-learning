@@ -11,7 +11,6 @@ class MNISTLoader(object):
     def __init__(self, config):
         self.batch_size = config.batch_size
         self.num_epochs = config.num_epochs
-        self.num_parallel_calls = config.num_parallel_calls
         self.shuffle_buffer = config.shuffle_buffer
         self.data_dir = config.data_dir
 
@@ -40,7 +39,7 @@ class MNISTLoader(object):
         return dataset
 
 
-    def download(directory, filename):
+    def download(self, directory, filename):
         """Download (and unzip) a file from the MNIST dataset if not already done."""
         filepath = os.path.join(directory, filename)
         if tf.gfile.Exists(filepath):
@@ -64,16 +63,16 @@ class MNISTLoader(object):
         dataset = dataset.repeat(self.num_epochs)
         dataset = dataset.shuffle(buffer_size=self.shuffle_buffer)
         dataset = dataset.batch(self.batch_size)
-        iterator = dataset.make_oneshot_iterator()
+        iterator = dataset.make_one_shot_iterator()
         return iterator
 
 
-    def get_train_iterator(self, dataset):
+    def get_test_iterator(self, dataset):
         TEST_NUM = 10000  # the number of mnist-testset
         dataset = dataset.prefetch(buffer_size=self.batch_size)
         dataset = dataset.repeat()
         dataset = dataset.batch(TEST_NUM)
-        iterator = dataset.make_oneshot_iterator()
+        iterator = dataset.make_one_shot_iterator()
         return iterator
 
 
