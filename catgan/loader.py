@@ -23,7 +23,7 @@ class MNISTLoader(object):
             # Normalize from [0, 255] to [0.0, 1.0]
             image = tf.decode_raw(image, tf.uint8)
             image = tf.cast(image, tf.float32)
-            # image = tf.reshape(image, [784])
+            image = tf.reshape(image, [784])
             return image / 255.0
 
         def decode_label(label):
@@ -70,7 +70,7 @@ class MNISTLoader(object):
     def get_test_iterator(self, dataset):
         TEST_NUM = 10000  # the number of mnist-testset
         dataset = dataset.prefetch(buffer_size=self.batch_size)
-        dataset = dataset.repeat()
+        dataset = dataset.repeat(1)
         dataset = dataset.batch(TEST_NUM)
         iterator = dataset.make_one_shot_iterator()
         return iterator
@@ -80,14 +80,14 @@ class MNISTLoader(object):
         dataset = self.get_dataset('train-images-idx3-ubyte', 'train-labels-idx1-ubyte')
         iterator = self.get_train_iterator(dataset)
         images, labels = iterator.get_next()
-        return images, labels
+        return {'x':images}, labels
 
 
     def test_input_fn(self):
         dataset = self.get_dataset('t10k-images-idx3-ubyte', 't10k-labels-idx1-ubyte')
         iterator = self.get_test_iterator(dataset)
         images, labels = iterator.get_next()
-        return images, labels
+        return {'x':images}, labels
 
     def predict_input_fn(self):
         raise NotImplementedError
