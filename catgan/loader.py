@@ -35,7 +35,7 @@ class MNISTLoader(object):
             images_filepath, 28 * 28, header_bytes=16).map(decode_image)
         labels = tf.data.FixedLengthRecordDataset(
             labels_filepath, 1, header_bytes=8).map(decode_label)
-        dataset = tf.data.Dataset.zip((images, labels))
+        dataset = tf.data.Dataset.zip(({'x':images}, labels))
         return dataset
 
 
@@ -80,14 +80,14 @@ class MNISTLoader(object):
         dataset = self.get_dataset('train-images-idx3-ubyte', 'train-labels-idx1-ubyte')
         iterator = self.get_train_iterator(dataset)
         images, labels = iterator.get_next()
-        return {'x':images}, labels
+        return images, labels
 
 
     def test_input_fn(self):
         dataset = self.get_dataset('t10k-images-idx3-ubyte', 't10k-labels-idx1-ubyte')
         iterator = self.get_test_iterator(dataset)
         images, labels = iterator.get_next()
-        return {'x':images}, labels
+        return images, labels
 
     def predict_input_fn(self):
         raise NotImplementedError
